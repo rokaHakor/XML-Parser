@@ -1,0 +1,14 @@
+<!doctype html>
+<title>XML Parser</title>
+<html>
+<body>
+    <p>Click on the "Choose File" button to upload a file:</p>
+    <form action="/upload" enctype="multipart/form-data" method="post">
+        <input type="file" id="myFile" name="filename">
+        <input type="submit" value="Submit">
+    </form>
+    {% if filename %}
+    <p>Showing File: {{ filename }}</p>
+    {% endif %}
+</body>
+</html>
