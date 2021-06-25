@@ -35,9 +35,8 @@ def index(filename=None):
 @app.route('/api/upload', methods=['POST'])
 def upload():
     f = flask.request.files['filename']
-    parsed_tuple = xml_parser.parse_xml(f)
-    data[f.filename] = {'Plaintiff': parsed_tuple[0],
-                        'Defendant': parsed_tuple[1]}
+    parsed_xml = xml_parser.parse_xml(f)
+    data[f.filename] = parsed_xml
     save_database()
     return flask.redirect('/files/' + f.filename)
 

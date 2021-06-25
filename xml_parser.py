@@ -1,6 +1,7 @@
 import re
 import xml.etree.ElementTree as ET
 
+
 def namespace(element):
     m = re.match(r'\{.*\}', element.tag)
     return m.group(0) if m else ''
@@ -55,4 +56,4 @@ def parse_xml(xml):
     plaint_index = find_text_reverse(parse_list, 'Plaintiff,', vs_index)
     plaintiff = find_plaintiff(parse_list, plaint_index)
     defendant = find_defendant(parse_list, vs_index, defend_index)
-    return (plaintiff, defendant)
+    return {'Plaintiff': plaintiff, 'Defendant': defendant}
