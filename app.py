@@ -7,11 +7,27 @@ from flask import Flask
 app = Flask(__name__)
 data = {}
 
+
 @app.route("/")
 @app.route('/files/<filename>')
 def index(filename=None):
     if filename is not None:
-        json_text = data[filename]
+        document = {
+            "$type": "Document",
+            "id": "1",
+            "filename": filename,
+            "plaintiff": {
+                "$type": "people",
+                "id": "1",
+                "name": data[filename]['Plaintiff']
+            },
+            "defendant": {
+                "$type": "corporation",
+                "id": "1",
+                "name": data[filename]['Defendant']
+            }
+        }
+        json_text = json_api_doc.serialize(document)
         return flask.render_template('page.html', filename=filename, json_text=json_text)
     return flask.render_template('page.html')
 
@@ -20,20 +36,33 @@ def index(filename=None):
 def upload():
     f = flask.request.files['filename']
     parsed_tuple = xml_parser.parse_xml(f)
-    document = {
-        '$type': 'article',
-        'id': '1',
-        'name': 'Article 1'
-    }
-    print(json_api_doc.serialize(document))
+    data[f.filename] = {'Plaintiff': parsed_tuple[0],
+                        'Defendant': parsed_tuple[1]}
     save_database()
-    return flask.redirect('/files/'+f.filename)
+    return flask.redirect('/files/' + f.filename)
 
 
 @app.route('/api/file/<filename>', methods=['GET'])
 def retrieve(filename):
-    parsed_file = data[filename]
-    return parsed_file
+    if filename in data:
+        document = {
+            "$type": "Document",
+            "id": "1",
+            "filename": filename,
+            "plaintiff": {
+                "$type": "people",
+                "id": "1",
+                "name": data[filename]['Plaintiff']
+            },
+            "defendant": {
+                "$type": "corporation",
+                "id": "1",
+                "name": data[filename]['Defendant']
+            }
+        }
+        json_text = json_api_doc.serialize(document)
+        return json_text
+    return {}
 
 
 def load_database():
