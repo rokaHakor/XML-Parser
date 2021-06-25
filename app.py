@@ -11,6 +11,9 @@ data = {}
 @app.route("/")
 @app.route('/files/<filename>')
 def index(filename=None):
+    ''' The default route of the webserver.
+        Used to deliver the HTML page for file upload and also used to display the parsed info.
+    '''
     if filename is not None and filename in data['Documents']:
         json_text = api_serialized_data(filename)
         return flask.render_template('page.html', filename=filename, json_text=json_text)
@@ -19,6 +22,9 @@ def index(filename=None):
 
 @app.route('/api/upload', methods=['POST'])
 def upload():
+    ''' The upload API route used to upload XML files.
+        Parses the data from the XML and saves it in the text file database.
+    '''
     f = flask.request.files['filename']
     parsed_xml = xml_parser.parse_xml(f)
     plaintiff_index = data['Plaintiffs']['Current_Index'] = data['Plaintiffs']['Current_Index'] + 1
@@ -36,12 +42,17 @@ def upload():
 
 @app.route('/api/file/<filename>', methods=['GET'])
 def retrieve(filename):
+    ''' The GET JSON API route to get the extracted data of a file as a JSON
+        Returns an empty JSON if there is not data regarding a file in the database
+     '''
     if filename is not None and filename in data['Documents']:
         return api_serialized_data(filename)
     return {}
 
 
 def api_serialized_data(filename):
+    '''Serializes the data from the database into JSON API format'''
+
     plaintiff_id = str(data['Documents'][filename]['Plaintiff_Id'])
     defendant_id = str(data['Documents'][filename]['Defendant_Id'])
     document_id = str(data['Documents'][filename]['Document_Id'])
@@ -65,6 +76,8 @@ def api_serialized_data(filename):
 
 
 def initialize_database():
+    ''' Used to initialize the database
+    '''
     global data
     with open('database.txt', 'w') as outfile:
         data = {'Documents': {'Current_Index': 0},
@@ -74,6 +87,8 @@ def initialize_database():
 
 
 def load_database():
+    ''' Attempts to load the database and initializes it if it doesn't exist
+    '''
     global data
     try:
         with open('database.txt') as json_file:
@@ -85,11 +100,15 @@ def load_database():
 
 
 def save_database():
+    ''' Saves new data to the database, not atomically safe since using text file
+    '''
     global data
     with open('database.txt', 'w') as outfile:
         json.dump(data, outfile)
 
 
 if __name__ == '__main__':
+    ''' Loads the database and starts the webserver
+    '''
     load_database()
     app.run(debug=True)
