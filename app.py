@@ -23,11 +23,13 @@ def upload():
     parsed_xml = xml_parser.parse_xml(f)
     plaintiff_index = data['Plaintiffs']['Current_Index'] = data['Plaintiffs']['Current_Index'] + 1
     defendant_index = data['Defendants']['Current_Index'] = data['Defendants']['Current_Index'] + 1
-    data['Plaintiffs'][plaintiff_index] = parsed_xml['Plaintiff']
-    data['Defendants'][defendant_index] = parsed_xml['Defendant']
-    data['Documents'][f.filename] = {'Plaintiff_Id': plaintiff_index,
-                                     'Defendant_Id': defendant_index}
-    data['Documents'][f.filename]['Document_Id'] = data['Documents']['Current_Index'] = data['Documents']['Current_Index'] + 1
+    data['Plaintiffs'][str(plaintiff_index)] = parsed_xml['Plaintiff']
+    data['Defendants'][str(defendant_index)] = parsed_xml['Defendant']
+    data['Documents'][f.filename] = {'Plaintiff_Id': str(plaintiff_index),
+                                     'Defendant_Id': str(defendant_index)}
+    data['Documents']['Current_Index'] = data['Documents']['Current_Index'] + 1
+    data['Documents'][f.filename]['Document_Id'] = str(
+        data['Documents']['Current_Index'])
     save_database()
     return flask.redirect('/files/' + f.filename)
 
