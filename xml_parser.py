@@ -2,14 +2,14 @@ import re
 import xml.etree.ElementTree as ET
 
 
-def namespace(element):
+def get_namespace(element):
     m = re.match(r'\{.*\}', element.tag)
     return m.group(0) if m else ''
 
 
-def parse_text(root):
+def parse_text(root, namespace):
     block = []
-    for item in root.findall('.//{http://www.abbyy.com/FineReader_xml/FineReader10-schema-v1.xml}formatting'):
+    for item in root.findall('.//' + namespace + 'formatting'):
         if item.text:
             block.append(item.text)
     return block
@@ -50,7 +50,8 @@ def find_plaintiff(text_list, start):
 def parse_xml(xml):
     tree = ET.parse(xml)
     root = tree.getroot()
-    parse_list = parse_text(root)
+    namespace = get_namespace(root)
+    parse_list = parse_text(root, namespace)
     defend_index = find_text(parse_list, 'Defendant')
     vs_index = find_vs(parse_list, defend_index)
     plaint_index = find_text_reverse(parse_list, 'Plaintiff,', vs_index)
