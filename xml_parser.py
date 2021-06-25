@@ -55,6 +55,6 @@ def parse_xml(xml):
     defend_index = find_text(parse_list, 'Defendant')
     vs_index = find_vs(parse_list, defend_index)
     plaint_index = find_text_reverse(parse_list, 'Plaintiff,', vs_index)
-    plaintiff = find_plaintiff(parse_list, plaint_index)
-    defendant = find_defendant(parse_list, vs_index, defend_index)
+    plaintiff = find_plaintiff(parse_list, plaint_index).strip()
+    defendant = find_defendant(parse_list, vs_index, defend_index).strip()
     return {'Plaintiff': plaintiff, 'Defendant': defendant}

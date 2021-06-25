@@ -27,6 +27,7 @@ def upload():
     data['Defendants'][defendant_index] = parsed_xml['Defendant']
     data['Documents'][f.filename] = {'Plaintiff_Id': plaintiff_index,
                                      'Defendant_Id': defendant_index}
+    data['Documents'][f.filename]['Document_Id'] = data['Documents']['Current_Index'] = data['Documents']['Current_Index'] + 1
     save_database()
     return flask.redirect('/files/' + f.filename)
 
@@ -39,11 +40,12 @@ def retrieve(filename):
 
 
 def api_serialized_data(filename):
-    plaintiff_id = data['Documents'][filename]['Plaintiff_Id']
-    defendant_id = data['Documents'][filename]['Defendant_id']
+    plaintiff_id = str(data['Documents'][filename]['Plaintiff_Id'])
+    defendant_id = str(data['Documents'][filename]['Defendant_Id'])
+    document_id = str(data['Documents'][filename]['Document_Id'])
     document = {
-        "$type": "Document",
-        "id": "1",
+        "$type": "document",
+        "id": document_id,
         "filename": filename,
         "plaintiff": {
             "$type": "people",
@@ -56,7 +58,8 @@ def api_serialized_data(filename):
             "name": data['Defendants'][defendant_id]
         }
     }
-    return json_api_doc.serialize(document)
+    serialized = json_api_doc.serialize(document)
+    return serialized
 
 
 def initialize_database():

@@ -9,6 +9,8 @@
     </form>
     {% if filename %}
     <p>Showing File: {{ filename }}</p>
+    <p>API Route:</p>
+    <a href="{{ '/api/file/%s'%filename }}" id="apiLink" target="_blank">http://127.0.0.1:5000/api/file/{{filename}}</a>
     {% endif %}
     {% if json_text %}
     <p>{{ json_text }}</p>
